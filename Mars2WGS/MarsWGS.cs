@@ -7,8 +7,14 @@ using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
 
+//[assembly: CompilationRelaxationsAttribute( CompilationRelaxations.NoStringInterning )] 
+
 namespace Mars2WGS
 {
+    enum MapSource { Google=0, Baidu=1 };
+    enum ConvertingMode { LookTable=0, Formula=1 };
+    enum ConvertingType { ToWGS=0, ToMars=1 };
+
     class MarsWGS
     {
         private double[] TableX = new double[660 * 450];
@@ -34,9 +40,6 @@ namespace Mars2WGS
                 {
                     string s = sr.ReadToEnd();
 
-                    //textBox1.Text = s;
-
-                    string[] lines = s.Split( '\n' );
                     Match MP = Regex.Match( s, "(\\d+)" );
 
                     int i = 0;
@@ -55,7 +58,8 @@ namespace Mars2WGS
                         MP = MP.NextMatch();
                     }
                     InitTable = true;
-                    //MessageBox.Show((i / 2).ToString());
+                    s = null;
+                    sr.Close();
                 }
             }
         }
@@ -147,50 +151,47 @@ namespace Mars2WGS
         /// <param name="yMars">中国地图经度</param>
         public void Convert2Mars( double xWgs, double yWgs, out double xMars, out double yMars )
         {
-            int i, j, k;
-            double x1, y1, x2, y2, x3, y3, x4, y4, xtry, ytry, dx, dy;
-            double t, u;
-
             xMars = xWgs;
             yMars = yWgs;
 
-            if ( !InitTable )
+            const double pi = 3.14159265358979324;
+
+            //
+            // Krasovsky 1940
+            //
+            // a = 6378245.0, 1/f = 298.3
+            // b = a * (1 - f)
+            // ee = (a^2 - b^2) / a^2;
+            const double a = 6378245.0;
+            const double ee = 0.00669342162296594323;
+
+            if ( xWgs < 72.004 || xWgs > 137.8347 )
+                return;
+            if ( yWgs < 0.8293 || yWgs > 55.8271 )
                 return;
 
-            xtry = xWgs;
-            ytry = yWgs;
+            double x=0, y=0;
+            x = xWgs - 105.0;
+            y = yWgs - 35.0;
 
-            for ( k = 0; k < 10; ++k )
-            {
-                // 只对中国国境内数据转换
-                if ( xtry < 72 || xtry > 137.9 || ytry < 10 || ytry > 54.9 )
-                {
-                    return;
-                }
+            double dLon =  300.0 + 1.0 * x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.Sqrt( Math.Abs( x ) );
+            dLon += (  20.0 * Math.Sin( 6.0 * x * pi ) + 20.0 * Math.Sin( 2.0 * x * pi ) ) * 2.0 / 3.0;
+            dLon += (  20.0 * Math.Sin( x * pi ) + 40.0 * Math.Sin(x / 3.0 * pi ) ) * 2.0 / 3.0;
+            dLon += ( 150.0 * Math.Sin( x / 12.0 * pi ) + 300.0 * Math.Sin( x / 30.0 * pi ) ) * 2.0 / 3.0;            
+            
+            double dLat = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.Sqrt( Math.Abs( x ) );
+            dLat += (  20.0 * Math.Sin( 6.0 * x * pi ) + 20.0 * Math.Sin( 2.0 * x * pi ) ) * 2.0 / 3.0;
+            dLat += (  20.0 * Math.Sin( y * pi ) + 40.0 * Math.Sin( y / 3.0 * pi ) ) * 2.0 / 3.0;
+            dLat += ( 160.0 * Math.Sin( y / 12.0 * pi ) + 320.0 * Math.Sin( y * pi / 30.0 ) ) * 2.0 / 3.0;
 
-                i = (int)( ( xtry - 72.0 ) * 10.0 );
-                j = (int)( ( ytry - 10.0 ) * 10.0 );
-
-                x1 = TableX[GetWGSID( i, j )];
-                y1 = TableY[GetWGSID( i, j )];
-                x2 = TableX[GetWGSID( i - 1, j )];
-                y2 = TableY[GetWGSID( i - 1, j )];
-                x3 = TableX[GetWGSID( i - 1, j - 1 )];
-                y3 = TableY[GetWGSID( i - 1, j - 1 )];
-                x4 = TableX[GetWGSID( i, j - 1 )];
-                y4 = TableY[GetWGSID( i, j - 1 )];
-
-                t = ( xtry - 72.0 - 0.1 * i ) * 10.0;
-                u = ( ytry - 10.0 - 0.1 * j ) * 10.0;
-
-                dx = ( 1.0 - t ) * ( 1.0 - u ) * x1 + t * ( 1.0 - u ) * x2 + t * u * x3 + ( 1.0 - t ) * u * x4 - xtry;
-                dy = ( 1.0 - t ) * ( 1.0 - u ) * y1 + t * ( 1.0 - u ) * y2 + t * u * y3 + ( 1.0 - t ) * u * y4 - ytry;
-
-                xtry = ( xtry + xWgs - dx ) / 2.0;
-                ytry = ( ytry + yWgs - dy ) / 2.0;
-            }
-            xMars = xtry;
-            yMars = ytry;
+            double radLat = yWgs / 180.0 * pi;
+            double magic = Math.Sin( radLat );
+            magic = 1 - ee * magic * magic;
+            double sqrtMagic = Math.Sqrt( magic );
+            dLon = ( dLon * 180.0 ) / ( a / sqrtMagic * Math.Cos( radLat ) * pi );
+            dLat = ( dLat * 180.0 ) / ( ( a * ( 1 - ee ) ) / ( magic * sqrtMagic ) * pi );
+            xMars = xWgs + dLon;
+            yMars = yWgs + dLat;
         }
 
         public void Convert2Mars(string tracklog_src, string tracklog_dst)
@@ -265,6 +266,7 @@ namespace Mars2WGS
                     }
                 }
                 #endregion
+                gpx.AppendChild( gpx.CreateWhitespace("\n") );
                 gpx.Save( FileDst );
             }
             return true;
@@ -322,6 +324,7 @@ namespace Mars2WGS
                     }
                 }
                 #endregion
+                kml.AppendChild( kml.CreateWhitespace( "\n" ) );
                 kml.Save( FileDst );
             }
             return true;

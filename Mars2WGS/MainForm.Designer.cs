@@ -59,6 +59,10 @@
             this.dlgSave = new System.Windows.Forms.SaveFileDialog();
             this.btnExit = new System.Windows.Forms.Button();
             this.pbConvert = new System.Windows.Forms.ProgressBar();
+            this.cbbMapSource = new System.Windows.Forms.ComboBox();
+            this.lblMapSource = new System.Windows.Forms.Label();
+            this.lblConvertAlgorithm = new System.Windows.Forms.Label();
+            this.cbbConvertAlgorithm = new System.Windows.Forms.ComboBox();
             this.pnlAction.SuspendLayout();
             this.grpSrc.SuspendLayout();
             this.grpDst.SuspendLayout();
@@ -254,6 +258,10 @@
             // 
             // grpConvert
             // 
+            this.grpConvert.Controls.Add(this.lblConvertAlgorithm);
+            this.grpConvert.Controls.Add(this.cbbConvertAlgorithm);
+            this.grpConvert.Controls.Add(this.lblMapSource);
+            this.grpConvert.Controls.Add(this.cbbMapSource);
             this.grpConvert.Controls.Add(this.pbConvert);
             this.grpConvert.Controls.Add(this.rbToMars);
             this.grpConvert.Controls.Add(this.rbToWGS);
@@ -264,18 +272,17 @@
             this.grpConvert.Controls.Add(this.btnConvert);
             this.grpConvert.Location = new System.Drawing.Point(14, 198);
             this.grpConvert.Name = "grpConvert";
-            this.grpConvert.Size = new System.Drawing.Size(597, 180);
+            this.grpConvert.Size = new System.Drawing.Size(597, 191);
             this.grpConvert.TabIndex = 5;
             this.grpConvert.TabStop = false;
             this.grpConvert.Text = "GPX/KML Convert";
             // 
             // rbToMars
             // 
-            this.rbToMars.Location = new System.Drawing.Point(245, 85);
+            this.rbToMars.Location = new System.Drawing.Point(101, 106);
             this.rbToMars.Name = "rbToMars";
             this.rbToMars.Size = new System.Drawing.Size(104, 24);
             this.rbToMars.TabIndex = 6;
-            this.rbToMars.TabStop = true;
             this.rbToMars.Text = "To Mars";
             this.rbToMars.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.rbToMars.UseVisualStyleBackColor = true;
@@ -285,7 +292,7 @@
             // 
             this.rbToWGS.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.rbToWGS.Checked = true;
-            this.rbToWGS.Location = new System.Drawing.Point(94, 85);
+            this.rbToWGS.Location = new System.Drawing.Point(101, 76);
             this.rbToWGS.Name = "rbToWGS";
             this.rbToWGS.Size = new System.Drawing.Size(104, 24);
             this.rbToWGS.TabIndex = 5;
@@ -297,7 +304,7 @@
             // 
             // lblFileDst
             // 
-            this.lblFileDst.Location = new System.Drawing.Point(13, 112);
+            this.lblFileDst.Location = new System.Drawing.Point(13, 127);
             this.lblFileDst.Name = "lblFileDst";
             this.lblFileDst.Size = new System.Drawing.Size(100, 23);
             this.lblFileDst.TabIndex = 4;
@@ -307,7 +314,7 @@
             // edFileDst
             // 
             this.edFileDst.AllowDrop = true;
-            this.edFileDst.Location = new System.Drawing.Point(15, 138);
+            this.edFileDst.Location = new System.Drawing.Point(15, 153);
             this.edFileDst.Name = "edFileDst";
             this.edFileDst.Size = new System.Drawing.Size(473, 21);
             this.edFileDst.TabIndex = 3;
@@ -338,7 +345,7 @@
             // 
             this.btnConvert.Location = new System.Drawing.Point(494, 48);
             this.btnConvert.Name = "btnConvert";
-            this.btnConvert.Size = new System.Drawing.Size(94, 111);
+            this.btnConvert.Size = new System.Drawing.Size(94, 126);
             this.btnConvert.TabIndex = 0;
             this.btnConvert.Text = "Convert";
             this.btnConvert.UseVisualStyleBackColor = true;
@@ -355,9 +362,9 @@
             // 
             // btnExit
             // 
-            this.btnExit.Location = new System.Drawing.Point(508, 12);
+            this.btnExit.Location = new System.Drawing.Point(508, 7);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(94, 23);
+            this.btnExit.Size = new System.Drawing.Size(94, 32);
             this.btnExit.TabIndex = 0;
             this.btnExit.Text = "Close";
             this.btnExit.UseVisualStyleBackColor = true;
@@ -369,6 +376,50 @@
             this.pbConvert.Name = "pbConvert";
             this.pbConvert.Size = new System.Drawing.Size(94, 12);
             this.pbConvert.TabIndex = 7;
+            // 
+            // cbbMapSource
+            // 
+            this.cbbMapSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbbMapSource.Enabled = false;
+            this.cbbMapSource.FormattingEnabled = true;
+            this.cbbMapSource.Items.AddRange(new object[] {
+            "Google Map",
+            "Baidu Map"});
+            this.cbbMapSource.Location = new System.Drawing.Point(235, 106);
+            this.cbbMapSource.Name = "cbbMapSource";
+            this.cbbMapSource.Size = new System.Drawing.Size(89, 20);
+            this.cbbMapSource.TabIndex = 8;
+            // 
+            // lblMapSource
+            // 
+            this.lblMapSource.Location = new System.Drawing.Point(233, 80);
+            this.lblMapSource.Name = "lblMapSource";
+            this.lblMapSource.Size = new System.Drawing.Size(91, 23);
+            this.lblMapSource.TabIndex = 9;
+            this.lblMapSource.Text = "Map Source:";
+            this.lblMapSource.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblConvertAlgorithm
+            // 
+            this.lblConvertAlgorithm.Location = new System.Drawing.Point(344, 80);
+            this.lblConvertAlgorithm.Name = "lblConvertAlgorithm";
+            this.lblConvertAlgorithm.Size = new System.Drawing.Size(91, 23);
+            this.lblConvertAlgorithm.TabIndex = 11;
+            this.lblConvertAlgorithm.Text = "Mode:";
+            this.lblConvertAlgorithm.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // cbbConvertAlgorithm
+            // 
+            this.cbbConvertAlgorithm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbbConvertAlgorithm.Enabled = false;
+            this.cbbConvertAlgorithm.FormattingEnabled = true;
+            this.cbbConvertAlgorithm.Items.AddRange(new object[] {
+            "Mars2Wgs.txt",
+            "Formula"});
+            this.cbbConvertAlgorithm.Location = new System.Drawing.Point(346, 106);
+            this.cbbConvertAlgorithm.Name = "cbbConvertAlgorithm";
+            this.cbbConvertAlgorithm.Size = new System.Drawing.Size(89, 20);
+            this.cbbConvertAlgorithm.TabIndex = 10;
             // 
             // MainForm
             // 
@@ -386,6 +437,8 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Mars <-> WGS84";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.pnlAction.ResumeLayout(false);
             this.grpSrc.ResumeLayout(false);
             this.grpSrc.PerformLayout();
@@ -434,6 +487,10 @@
         private System.Windows.Forms.RadioButton rbToWGS;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.ProgressBar pbConvert;
+        private System.Windows.Forms.Label lblConvertAlgorithm;
+        private System.Windows.Forms.ComboBox cbbConvertAlgorithm;
+        private System.Windows.Forms.Label lblMapSource;
+        private System.Windows.Forms.ComboBox cbbMapSource;
     }
 }
 
