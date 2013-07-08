@@ -29,6 +29,11 @@
         private void InitializeComponent()
         {
             this.pnlAction = new System.Windows.Forms.Panel();
+            this.cbbConvertAlgorithm = new System.Windows.Forms.ComboBox();
+            this.cbbMapSource = new System.Windows.Forms.ComboBox();
+            this.lblConvertAlgorithm = new System.Windows.Forms.Label();
+            this.lblMapSource = new System.Windows.Forms.Label();
+            this.btnExit = new System.Windows.Forms.Button();
             this.grpSrc = new System.Windows.Forms.GroupBox();
             this.lblSrcLon = new System.Windows.Forms.Label();
             this.edSrcLon = new System.Windows.Forms.TextBox();
@@ -48,6 +53,7 @@
             this.lblDiffLat = new System.Windows.Forms.Label();
             this.edDiffLat = new System.Windows.Forms.TextBox();
             this.grpConvert = new System.Windows.Forms.GroupBox();
+            this.pbConvert = new System.Windows.Forms.ProgressBar();
             this.rbToMars = new System.Windows.Forms.RadioButton();
             this.rbToWGS = new System.Windows.Forms.RadioButton();
             this.lblFileDst = new System.Windows.Forms.Label();
@@ -57,12 +63,6 @@
             this.btnConvert = new System.Windows.Forms.Button();
             this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
             this.dlgSave = new System.Windows.Forms.SaveFileDialog();
-            this.btnExit = new System.Windows.Forms.Button();
-            this.pbConvert = new System.Windows.Forms.ProgressBar();
-            this.cbbMapSource = new System.Windows.Forms.ComboBox();
-            this.lblMapSource = new System.Windows.Forms.Label();
-            this.lblConvertAlgorithm = new System.Windows.Forms.Label();
-            this.cbbConvertAlgorithm = new System.Windows.Forms.ComboBox();
             this.pnlAction.SuspendLayout();
             this.grpSrc.SuspendLayout();
             this.grpDst.SuspendLayout();
@@ -73,12 +73,71 @@
             // 
             // pnlAction
             // 
+            this.pnlAction.Controls.Add(this.cbbConvertAlgorithm);
+            this.pnlAction.Controls.Add(this.cbbMapSource);
+            this.pnlAction.Controls.Add(this.lblConvertAlgorithm);
+            this.pnlAction.Controls.Add(this.lblMapSource);
             this.pnlAction.Controls.Add(this.btnExit);
             this.pnlAction.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlAction.Location = new System.Drawing.Point(0, 395);
             this.pnlAction.Name = "pnlAction";
             this.pnlAction.Size = new System.Drawing.Size(624, 47);
             this.pnlAction.TabIndex = 0;
+            // 
+            // cbbConvertAlgorithm
+            // 
+            this.cbbConvertAlgorithm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbbConvertAlgorithm.FormattingEnabled = true;
+            this.cbbConvertAlgorithm.Items.AddRange(new object[] {
+            "Mars2Wgs.txt",
+            "Formula"});
+            this.cbbConvertAlgorithm.Location = new System.Drawing.Point(234, 13);
+            this.cbbConvertAlgorithm.Name = "cbbConvertAlgorithm";
+            this.cbbConvertAlgorithm.Size = new System.Drawing.Size(89, 20);
+            this.cbbConvertAlgorithm.TabIndex = 15;
+            this.cbbConvertAlgorithm.SelectedIndexChanged += new System.EventHandler(this.cbbConvertAlgorithm_SelectedIndexChanged);
+            // 
+            // cbbMapSource
+            // 
+            this.cbbMapSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbbMapSource.Enabled = false;
+            this.cbbMapSource.FormattingEnabled = true;
+            this.cbbMapSource.Items.AddRange(new object[] {
+            "Google Map",
+            "Baidu Map"});
+            this.cbbMapSource.Location = new System.Drawing.Point(84, 13);
+            this.cbbMapSource.Name = "cbbMapSource";
+            this.cbbMapSource.Size = new System.Drawing.Size(89, 20);
+            this.cbbMapSource.TabIndex = 14;
+            this.cbbMapSource.SelectedIndexChanged += new System.EventHandler(this.cbbMapSource_SelectedIndexChanged);
+            // 
+            // lblConvertAlgorithm
+            // 
+            this.lblConvertAlgorithm.Location = new System.Drawing.Point(186, 7);
+            this.lblConvertAlgorithm.Name = "lblConvertAlgorithm";
+            this.lblConvertAlgorithm.Size = new System.Drawing.Size(42, 32);
+            this.lblConvertAlgorithm.TabIndex = 13;
+            this.lblConvertAlgorithm.Text = "Mode:";
+            this.lblConvertAlgorithm.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblMapSource
+            // 
+            this.lblMapSource.Location = new System.Drawing.Point(3, 7);
+            this.lblMapSource.Name = "lblMapSource";
+            this.lblMapSource.Size = new System.Drawing.Size(75, 32);
+            this.lblMapSource.TabIndex = 12;
+            this.lblMapSource.Text = "Map Source:";
+            this.lblMapSource.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // btnExit
+            // 
+            this.btnExit.Location = new System.Drawing.Point(508, 7);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(94, 32);
+            this.btnExit.TabIndex = 0;
+            this.btnExit.Text = "Close";
+            this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // grpSrc
             // 
@@ -258,10 +317,6 @@
             // 
             // grpConvert
             // 
-            this.grpConvert.Controls.Add(this.lblConvertAlgorithm);
-            this.grpConvert.Controls.Add(this.cbbConvertAlgorithm);
-            this.grpConvert.Controls.Add(this.lblMapSource);
-            this.grpConvert.Controls.Add(this.cbbMapSource);
             this.grpConvert.Controls.Add(this.pbConvert);
             this.grpConvert.Controls.Add(this.rbToMars);
             this.grpConvert.Controls.Add(this.rbToWGS);
@@ -276,6 +331,13 @@
             this.grpConvert.TabIndex = 5;
             this.grpConvert.TabStop = false;
             this.grpConvert.Text = "GPX/KML Convert";
+            // 
+            // pbConvert
+            // 
+            this.pbConvert.Location = new System.Drawing.Point(494, 30);
+            this.pbConvert.Name = "pbConvert";
+            this.pbConvert.Size = new System.Drawing.Size(94, 12);
+            this.pbConvert.TabIndex = 7;
             // 
             // rbToMars
             // 
@@ -360,69 +422,6 @@
             // 
             this.dlgSave.SupportMultiDottedExtensions = true;
             // 
-            // btnExit
-            // 
-            this.btnExit.Location = new System.Drawing.Point(508, 7);
-            this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(94, 32);
-            this.btnExit.TabIndex = 0;
-            this.btnExit.Text = "Close";
-            this.btnExit.UseVisualStyleBackColor = true;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
-            // 
-            // pbConvert
-            // 
-            this.pbConvert.Location = new System.Drawing.Point(494, 30);
-            this.pbConvert.Name = "pbConvert";
-            this.pbConvert.Size = new System.Drawing.Size(94, 12);
-            this.pbConvert.TabIndex = 7;
-            // 
-            // cbbMapSource
-            // 
-            this.cbbMapSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbbMapSource.Enabled = false;
-            this.cbbMapSource.FormattingEnabled = true;
-            this.cbbMapSource.Items.AddRange(new object[] {
-            "Google Map",
-            "Baidu Map"});
-            this.cbbMapSource.Location = new System.Drawing.Point(235, 106);
-            this.cbbMapSource.Name = "cbbMapSource";
-            this.cbbMapSource.Size = new System.Drawing.Size(89, 20);
-            this.cbbMapSource.TabIndex = 8;
-            // 
-            // lblMapSource
-            // 
-            this.lblMapSource.Enabled = false;
-            this.lblMapSource.Location = new System.Drawing.Point(233, 80);
-            this.lblMapSource.Name = "lblMapSource";
-            this.lblMapSource.Size = new System.Drawing.Size(91, 23);
-            this.lblMapSource.TabIndex = 9;
-            this.lblMapSource.Text = "Map Source:";
-            this.lblMapSource.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblConvertAlgorithm
-            // 
-            this.lblConvertAlgorithm.Enabled = false;
-            this.lblConvertAlgorithm.Location = new System.Drawing.Point(344, 80);
-            this.lblConvertAlgorithm.Name = "lblConvertAlgorithm";
-            this.lblConvertAlgorithm.Size = new System.Drawing.Size(91, 23);
-            this.lblConvertAlgorithm.TabIndex = 11;
-            this.lblConvertAlgorithm.Text = "Mode:";
-            this.lblConvertAlgorithm.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // cbbConvertAlgorithm
-            // 
-            this.cbbConvertAlgorithm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbbConvertAlgorithm.Enabled = false;
-            this.cbbConvertAlgorithm.FormattingEnabled = true;
-            this.cbbConvertAlgorithm.Items.AddRange(new object[] {
-            "Mars2Wgs.txt",
-            "Formula"});
-            this.cbbConvertAlgorithm.Location = new System.Drawing.Point(346, 106);
-            this.cbbConvertAlgorithm.Name = "cbbConvertAlgorithm";
-            this.cbbConvertAlgorithm.Size = new System.Drawing.Size(89, 20);
-            this.cbbConvertAlgorithm.TabIndex = 10;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -489,10 +488,10 @@
         private System.Windows.Forms.RadioButton rbToWGS;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.ProgressBar pbConvert;
-        private System.Windows.Forms.Label lblConvertAlgorithm;
         private System.Windows.Forms.ComboBox cbbConvertAlgorithm;
-        private System.Windows.Forms.Label lblMapSource;
         private System.Windows.Forms.ComboBox cbbMapSource;
+        private System.Windows.Forms.Label lblConvertAlgorithm;
+        private System.Windows.Forms.Label lblMapSource;
     }
 }
 
