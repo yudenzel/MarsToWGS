@@ -1,22 +1,89 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Configuration;
 using System.Windows.Forms;
 
 namespace Mars2WGS
 {
     public partial class MainForm : Form
     {
+        string AppPath = System.AppDomain.CurrentDomain.BaseDirectory;
+        string LastOpenFolder = System.AppDomain.CurrentDomain.BaseDirectory;
+        string LastSaveFolder = System.AppDomain.CurrentDomain.BaseDirectory;
+        string LastMapSource = "Google Map";
+        string LastConvertMode = "Mars2Wgs.txt";
+
         MarsWGS m2w = new MarsWGS();
         string suffix = "_wgs";
+
+        private void LoadSetting()
+        {
+            Configuration config = ConfigurationManager.OpenExeConfiguration( Application.ExecutablePath );
+            AppSettingsSection appSection = config.AppSettings;
+
+            if ( appSection.Settings["LastOpenFolder"] != null )
+            {
+                LastOpenFolder = appSection.Settings["LastOpenFolder"].Value;
+            }
+            else
+            {
+                appSection.Settings.Add( "LastOpenFolder", LastOpenFolder );
+            }
+
+            if ( appSection.Settings["LastSaveFolder"] != null )
+            {
+                LastOpenFolder = appSection.Settings["LastSaveFolder"].Value;
+            }
+            else
+            {
+                appSection.Settings.Add( "LastSaveFolder", LastSaveFolder );
+            }
+
+            config.Save( ConfigurationSaveMode.Full );
+        }
+
+        private void SaveSetting()
+        {
+            Configuration config = ConfigurationManager.OpenExeConfiguration( Application.ExecutablePath );
+            AppSettingsSection appSection = config.AppSettings;
+
+            if ( appSection.Settings["LastOpenFolder"] != null )
+            {
+                appSection.Settings["LastOpenFolder"].Value = LastOpenFolder;
+            }
+            else
+            {
+                appSection.Settings.Add( "LastOpenFolder", LastOpenFolder );
+            }
+
+            if ( appSection.Settings["LastSaveFolder"] != null )
+            {
+                appSection.Settings["LastSaveFolder"].Value = LastSaveFolder;
+            }
+            else
+            {
+                appSection.Settings.Add( "LastSaveFolder", LastSaveFolder );
+            }
+
+            config.Save( ConfigurationSaveMode.Full );
+        }
 
         public MainForm()
         {
             InitializeComponent();
+            this.Icon = Icon.ExtractAssociatedIcon( Application.ExecutablePath );
+        }
+
+        private void MainForm_Load( object sender, EventArgs e )
+        {
+            LoadSetting();
+            cbbConvertAlgorithm.SelectedIndex = 0;
+            cbbMapSource.SelectedIndex = 0;
+        }
+
+        private void MainForm_FormClosing( object sender, FormClosingEventArgs e )
+        {
+            SaveSetting();
         }
 
         private void btnToWGS_Click( object sender, EventArgs e )
@@ -129,10 +196,11 @@ namespace Mars2WGS
             dlgOpen.Filter = "GPX File (*.gpx)|.gpx|KML File (*.kml)|.kml|All Files|*.*";
             dlgOpen.FilterIndex = 1;
             dlgOpen.FileName = "*.gpx";
-            //dlgOpen.InitialDirectory = 
+            //dlgOpen.InitialDirectory = LastOpenFolder;
             if ( dlgOpen.ShowDialog() == DialogResult.OK )
             {
                 edFileSrc.Text = dlgOpen.FileName.Trim();
+                LastOpenFolder = System.IO.Path.GetDirectoryName( dlgOpen.FileName );
             }
         }
 
@@ -142,10 +210,11 @@ namespace Mars2WGS
             dlgSave.Filter = "GPX File (*.gpx)|.gpx|KML File (*.kml)|.kml|All Files|*.*";
             dlgSave.FilterIndex = 1;
             dlgSave.FileName = "*.gpx";
-            //dlgSave.InitialDirectory = 
+            //dlgSave.InitialDirectory = LastSaveFolder;
             if ( dlgSave.ShowDialog() == DialogResult.OK )
             {
                 edFileDst.Text = dlgSave.FileName.Trim();
+                LastSaveFolder = System.IO.Path.GetDirectoryName( dlgSave.FileName );
             }
         }
 

@@ -1,0 +1,9 @@
+syntax: glob
+*.pdb
+*.vshost*
+debug
+release
+bin
+obj
+*.user
+*.suo
