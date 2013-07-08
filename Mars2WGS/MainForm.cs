@@ -10,8 +10,11 @@ namespace Mars2WGS
         string AppPath = System.AppDomain.CurrentDomain.BaseDirectory;
         string LastOpenFolder = System.AppDomain.CurrentDomain.BaseDirectory;
         string LastSaveFolder = System.AppDomain.CurrentDomain.BaseDirectory;
-        string LastMapSource = "Google Map";
-        string LastConvertMode = "Mars2Wgs.txt";
+        //string LastMapSource = "Google Map";
+        //string LastConvertMethod = "Mars2Wgs.txt";
+        MapSource LastMapSource = MapSource.Google;
+        ConvertingMode LastConvertMethod = ConvertingMode.LookTable;
+        ConvertingType ConvertMode = ConvertingType.ToMars;
 
         MarsWGS m2w = new MarsWGS();
         string suffix = "_wgs";
@@ -32,11 +35,29 @@ namespace Mars2WGS
 
             if ( appSection.Settings["LastSaveFolder"] != null )
             {
-                LastOpenFolder = appSection.Settings["LastSaveFolder"].Value;
+                LastSaveFolder = appSection.Settings["LastSaveFolder"].Value;
             }
             else
             {
                 appSection.Settings.Add( "LastSaveFolder", LastSaveFolder );
+            }
+
+            if ( appSection.Settings["LastMapSource"] != null )
+            {
+                LastMapSource = (MapSource)Enum.Parse( typeof(MapSource), appSection.Settings["LastMapSource"].Value );
+            }
+            else
+            {
+                appSection.Settings.Add( "LastMapSource", LastMapSource.ToString() );
+            }
+
+            if ( appSection.Settings["LastConvertMethod"] != null )
+            {
+                LastConvertMethod = (ConvertingMode)Enum.Parse( typeof( ConvertingMode ), appSection.Settings["LastConvertMethod"].Value );
+            }
+            else
+            {
+                appSection.Settings.Add( "LastConvertMethod", LastConvertMethod.ToString() );
             }
 
             config.Save( ConfigurationSaveMode.Full );
@@ -65,6 +86,24 @@ namespace Mars2WGS
                 appSection.Settings.Add( "LastSaveFolder", LastSaveFolder );
             }
 
+            if ( appSection.Settings["LastMapSource"] != null )
+            {
+                appSection.Settings["LastMapSource"].Value = LastMapSource.ToString();
+            }
+            else
+            {
+                appSection.Settings.Add( "LastMapSource", LastMapSource.ToString() );
+            }
+
+            if ( appSection.Settings["LastConvertMethod"] != null )
+            {
+                appSection.Settings["LastConvertMethod"].Value = LastConvertMethod.ToString();
+            }
+            else
+            {
+                appSection.Settings.Add( "LastConvertMethod", LastConvertMethod.ToString() );
+            }
+
             config.Save( ConfigurationSaveMode.Full );
         }
 
@@ -77,8 +116,30 @@ namespace Mars2WGS
         private void MainForm_Load( object sender, EventArgs e )
         {
             LoadSetting();
-            cbbConvertAlgorithm.SelectedIndex = 0;
-            cbbMapSource.SelectedIndex = 0;
+            switch ( LastMapSource )
+            {
+                case MapSource.Google:
+                    cbbMapSource.SelectedIndex = 0;
+                    break;
+                case MapSource.Baidu:
+                    cbbMapSource.SelectedIndex = 1;
+                    break;
+                default:
+                    cbbMapSource.SelectedIndex = 0;
+                    break;
+            }
+            switch ( LastConvertMethod )
+            {
+                case ConvertingMode.LookTable:
+                    cbbConvertAlgorithm.SelectedIndex = 0;
+                    break;
+                case ConvertingMode.Formula:
+                    cbbConvertAlgorithm.SelectedIndex = 1;
+                    break;
+                default:
+                    cbbConvertAlgorithm.SelectedIndex = 0;
+                    break;
+            }
         }
 
         private void MainForm_FormClosing( object sender, FormClosingEventArgs e )
@@ -94,7 +155,7 @@ namespace Mars2WGS
             double xWgs = x;
             double yWgs = y;
 
-            m2w.Convert2WGS( x, y, out xWgs, out yWgs );
+            m2w.Convert2WGS( x, y, out xWgs, out yWgs, LastConvertMethod );
 
             edDstLon.Text = xWgs.ToString( "0.0000000" );
             edDstLat.Text = yWgs.ToString( "0.0000000" );
@@ -122,12 +183,20 @@ namespace Mars2WGS
 
         private void btnConvert_Click( object sender, EventArgs e )
         {
-            //m2w.Convert2WGS( "test.gpx", "test_wgs.gpx" );
-
             string file_src = edFileSrc.Text.Trim();
             string file_dst = edFileDst.Text.Trim();
-
-            m2w.Convert2WGS( file_src, file_dst );
+            switch ( ConvertMode )
+            {
+                case ConvertingType.ToMars:
+                    m2w.Convert2Mars( file_src, file_dst );
+                    break;
+                case ConvertingType.ToWGS:
+                    m2w.Convert2WGS( file_src, file_dst, LastConvertMethod );
+                    break;
+                default:
+                    m2w.Convert2WGS( file_src, file_dst, LastConvertMethod );
+                    break;
+            }
         }
 
         private void edFileSrc_DragEnter( object sender, DragEventArgs e )
@@ -171,10 +240,12 @@ namespace Mars2WGS
             if ( rbToMars.Checked )
             {
                 suffix = "_mars";
+                ConvertMode = ConvertingType.ToMars;
             }
             else
             {
                 suffix = "_wgs";
+                ConvertMode = ConvertingType.ToWGS;
             }
         }
 
@@ -183,10 +254,12 @@ namespace Mars2WGS
             if ( rbToWGS.Checked )
             {
                 suffix = "_wgs";
+                ConvertMode = ConvertingType.ToWGS;
             }
             else
             {
                 suffix = "_mars";
+                ConvertMode = ConvertingType.ToMars;
             }
         }
 
@@ -221,6 +294,17 @@ namespace Mars2WGS
         private void btnExit_Click( object sender, EventArgs e )
         {
             Close();
+        }
+
+        private void cbbMapSource_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            LastMapSource = (MapSource)Enum.GetValues( typeof( MapSource ) ).GetValue( cbbMapSource.SelectedIndex );
+        }
+
+        private void cbbConvertAlgorithm_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            LastConvertMethod = (ConvertingMode)Enum.GetValues( typeof( ConvertingMode ) ).GetValue( cbbConvertAlgorithm.SelectedIndex );
+            
         }
 
     }

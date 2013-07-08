@@ -81,7 +81,7 @@ namespace Mars2WGS
         /// <param name="yMars">中国地图经度</param>
         /// <param name="xWgs">GPS纬度</param>
         /// <param name="yWgs">GPS经度</param>
-        public void Convert2WGS( double xMars, double yMars, out double xWgs, out double yWgs )
+        public void Convert2WGS( double xMars, double yMars, out double xWgs, out double yWgs, ConvertingMode ConvertMethod=ConvertingMode.LookTable )
         {
             int i, j, k;
             double x1, y1, x2, y2, x3, y3, x4, y4, xtry, ytry, dx, dy;
@@ -90,8 +90,18 @@ namespace Mars2WGS
             xWgs = xMars;
             yWgs = yMars;
 
-            if ( !InitTable )
+            if ( ( !InitTable ) || ( ConvertMethod == ConvertingMode.Formula ) )
+            {
+                xtry = xMars;
+                ytry = yMars;
+                Convert2Mars( xMars, yMars, out xtry, out ytry );
+                dx = xtry - xMars;
+                dy = ytry - yMars;
+
+                xWgs = xMars - dx;
+                yWgs = yMars - dy;
                 return;
+            }
 
             xtry = xMars;
             ytry = yMars;
@@ -129,16 +139,16 @@ namespace Mars2WGS
             yWgs = ytry;
         }
 
-        public void Convert2WGS( string tracklog_src, string tracklog_dst )
+        public void Convert2WGS( string tracklog_src, string tracklog_dst, ConvertingMode ConvertMethod = ConvertingMode.LookTable )
         {
             string ext = System.IO.Path.GetExtension(tracklog_src);
             if ( string.Equals( ext, ".gpx", StringComparison.InvariantCultureIgnoreCase ) )
             {
-                ConvertGPX( tracklog_src, tracklog_dst, true );
+                ConvertGPX( tracklog_src, tracklog_dst, true, ConvertMethod );
             }
             else if ( string.Equals( ext, ".kml", StringComparison.InvariantCultureIgnoreCase ) )
             {
-                ConvertKML( tracklog_src, tracklog_dst, true );
+                ConvertKML( tracklog_src, tracklog_dst, true, ConvertMethod );
             }
         }
 
@@ -207,7 +217,7 @@ namespace Mars2WGS
             }
         }
 
-        private bool ConvertGPX( string FileSrc, string FileDst, bool ToWGS = true )
+        private bool ConvertGPX( string FileSrc, string FileDst, bool ToWGS = true, ConvertingMode ConvertMethod = ConvertingMode.LookTable )
         {
             XmlDocument gpx = new XmlDocument();
             XmlNodeList elements = null;
@@ -246,7 +256,7 @@ namespace Mars2WGS
                         }
                         if ( ToWGS )
                         {
-                            Convert2WGS( source_lon, source_lat, out target_lon, out target_lat );
+                            Convert2WGS( source_lon, source_lat, out target_lon, out target_lat, ConvertMethod );
                         }
                         else
                         {
@@ -272,7 +282,7 @@ namespace Mars2WGS
             return true;
         }
 
-        private bool ConvertKML( string FileSrc, string FileDst, bool ToWGS = true )
+        private bool ConvertKML( string FileSrc, string FileDst, bool ToWGS = true, ConvertingMode ConvertMethod = ConvertingMode.LookTable )
         {
             XmlDocument kml = new XmlDocument();
             XmlNodeList elements = null;
@@ -311,7 +321,7 @@ namespace Mars2WGS
                             }
                             if ( ToWGS )
                             {
-                                Convert2WGS( source_lon, source_lat, out target_lon, out target_lat );
+                                Convert2WGS( source_lon, source_lat, out target_lon, out target_lat, ConvertMethod );
                             }
                             else
                             {
