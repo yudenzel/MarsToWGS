@@ -220,7 +220,7 @@
             this.grpDiff.Size = new System.Drawing.Size(112, 156);
             this.grpDiff.TabIndex = 4;
             this.grpDiff.TabStop = false;
-            this.grpDiff.Text = "Diffrence";
+            this.grpDiff.Text = "Difference";
             // 
             // lblDiffLon
             // 
