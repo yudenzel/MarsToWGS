@@ -14,7 +14,7 @@ namespace Mars2WGS
         //string LastConvertMethod = "Mars2Wgs.txt";
         MapSource LastMapSource = MapSource.Google;
         ConvertingMode LastConvertMethod = ConvertingMode.LookTable;
-        ConvertingType ConvertMode = ConvertingType.ToMars;
+        ConvertingType ConvertMode = ConvertingType.ToWGS;
 
         MarsWGS m2w = new MarsWGS();
         string suffix = "_wgs";
@@ -138,6 +138,21 @@ namespace Mars2WGS
                     break;
                 default:
                     cbbConvertAlgorithm.SelectedIndex = 0;
+                    break;
+            }
+            switch ( ConvertMode )
+            {
+                case ConvertingType.ToWGS:
+                    rbToWGS.Checked = true;
+                    rbToMars.Checked = false;
+                    break;
+                case ConvertingType.ToMars:
+                    rbToWGS.Checked = false;
+                    rbToMars.Checked = true;
+                    break;
+                default:
+                    rbToWGS.Checked = true;
+                    rbToMars.Checked = false;
                     break;
             }
         }
