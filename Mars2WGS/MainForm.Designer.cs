@@ -392,6 +392,7 @@
             // 
             // lblMapSource
             // 
+            this.lblMapSource.Enabled = false;
             this.lblMapSource.Location = new System.Drawing.Point(233, 80);
             this.lblMapSource.Name = "lblMapSource";
             this.lblMapSource.Size = new System.Drawing.Size(91, 23);
@@ -401,6 +402,7 @@
             // 
             // lblConvertAlgorithm
             // 
+            this.lblConvertAlgorithm.Enabled = false;
             this.lblConvertAlgorithm.Location = new System.Drawing.Point(344, 80);
             this.lblConvertAlgorithm.Name = "lblConvertAlgorithm";
             this.lblConvertAlgorithm.Size = new System.Drawing.Size(91, 23);
