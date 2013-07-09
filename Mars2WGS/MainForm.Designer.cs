@@ -91,7 +91,7 @@
             this.cbbConvertAlgorithm.Items.AddRange(new object[] {
             "Mars2Wgs.txt",
             "Formula"});
-            this.cbbConvertAlgorithm.Location = new System.Drawing.Point(234, 13);
+            this.cbbConvertAlgorithm.Location = new System.Drawing.Point(249, 13);
             this.cbbConvertAlgorithm.Name = "cbbConvertAlgorithm";
             this.cbbConvertAlgorithm.Size = new System.Drawing.Size(89, 20);
             this.cbbConvertAlgorithm.TabIndex = 15;
@@ -105,7 +105,7 @@
             this.cbbMapSource.Items.AddRange(new object[] {
             "Google Map",
             "Baidu Map"});
-            this.cbbMapSource.Location = new System.Drawing.Point(84, 13);
+            this.cbbMapSource.Location = new System.Drawing.Point(99, 13);
             this.cbbMapSource.Name = "cbbMapSource";
             this.cbbMapSource.Size = new System.Drawing.Size(89, 20);
             this.cbbMapSource.TabIndex = 14;
@@ -113,18 +113,18 @@
             // 
             // lblConvertAlgorithm
             // 
-            this.lblConvertAlgorithm.Location = new System.Drawing.Point(186, 7);
+            this.lblConvertAlgorithm.Location = new System.Drawing.Point(201, 10);
             this.lblConvertAlgorithm.Name = "lblConvertAlgorithm";
-            this.lblConvertAlgorithm.Size = new System.Drawing.Size(42, 32);
+            this.lblConvertAlgorithm.Size = new System.Drawing.Size(42, 26);
             this.lblConvertAlgorithm.TabIndex = 13;
             this.lblConvertAlgorithm.Text = "Mode:";
             this.lblConvertAlgorithm.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblMapSource
             // 
-            this.lblMapSource.Location = new System.Drawing.Point(3, 7);
+            this.lblMapSource.Location = new System.Drawing.Point(18, 10);
             this.lblMapSource.Name = "lblMapSource";
-            this.lblMapSource.Size = new System.Drawing.Size(75, 32);
+            this.lblMapSource.Size = new System.Drawing.Size(75, 26);
             this.lblMapSource.TabIndex = 12;
             this.lblMapSource.Text = "Map Source:";
             this.lblMapSource.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -330,7 +330,7 @@
             this.grpConvert.Size = new System.Drawing.Size(597, 191);
             this.grpConvert.TabIndex = 5;
             this.grpConvert.TabStop = false;
-            this.grpConvert.Text = "GPX/KML Convert";
+            this.grpConvert.Text = "GPX/KML/OruxMaps Convert";
             // 
             // pbConvert
             // 

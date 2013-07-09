@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.XPath;
 
 using System.IO;
 using System.Text.RegularExpressions;
@@ -141,14 +142,20 @@ namespace Mars2WGS
 
         public void Convert2WGS( string tracklog_src, string tracklog_dst, ConvertingMode ConvertMethod = ConvertingMode.LookTable )
         {
-            string ext = System.IO.Path.GetExtension(tracklog_src);
-            if ( string.Equals( ext, ".gpx", StringComparison.InvariantCultureIgnoreCase ) )
+            if(tracklog_src.EndsWith(".gpx", StringComparison.InvariantCultureIgnoreCase))
             {
                 ConvertGPX( tracklog_src, tracklog_dst, true, ConvertMethod );
             }
-            else if ( string.Equals( ext, ".kml", StringComparison.InvariantCultureIgnoreCase ) )
+            else if(tracklog_src.EndsWith(".kml", StringComparison.InvariantCultureIgnoreCase))
             {
                 ConvertKML( tracklog_src, tracklog_dst, true, ConvertMethod );
+            }
+            else if ( tracklog_src.EndsWith( ".otrk2.xml", StringComparison.InvariantCultureIgnoreCase ) )
+            {
+                string dst = String.Format( "{0}.bak", tracklog_src );
+                if ( File.Exists( dst ) )  File.Delete( dst );
+                System.IO.File.Move( tracklog_src, dst );
+                ConvertOtrk2( dst, tracklog_src, true, ConvertMethod );
             }
         }
 
@@ -204,16 +211,22 @@ namespace Mars2WGS
             yMars = yWgs + dLat;
         }
 
-        public void Convert2Mars(string tracklog_src, string tracklog_dst)
+        public void Convert2Mars( string tracklog_src, string tracklog_dst )
         {
-            string ext = System.IO.Path.GetExtension( tracklog_src );
-            if ( string.Equals( ext, ".gpx", StringComparison.InvariantCultureIgnoreCase ) )
+            if ( tracklog_src.EndsWith( ".gpx", StringComparison.InvariantCultureIgnoreCase ) )
             {
                 ConvertGPX( tracklog_src, tracklog_dst, false );
             }
-            else if ( string.Equals( ext, ".kml", StringComparison.InvariantCultureIgnoreCase ) )
+            else if ( tracklog_src.EndsWith( ".kml", StringComparison.InvariantCultureIgnoreCase ) )
             {
                 ConvertKML( tracklog_src, tracklog_dst, false );
+            }
+            else if ( tracklog_src.EndsWith( ".otrk2.xml", StringComparison.InvariantCultureIgnoreCase ) )
+            {
+                string dst = String.Format( "{0}.bak", tracklog_src );
+                if ( File.Exists( dst ) ) File.Delete( dst );
+                System.IO.File.Move( tracklog_src, dst );
+                ConvertOtrk2( dst, tracklog_src, false );
             }
         }
 
@@ -336,6 +349,107 @@ namespace Mars2WGS
                 #endregion
                 kml.AppendChild( kml.CreateWhitespace( "\n" ) );
                 kml.Save( FileDst );
+            }
+            return true;
+        }
+
+        private bool ConvertOtrk2( string FileSrc, string FileDst, bool ToWGS = true, ConvertingMode ConvertMethod = ConvertingMode.LookTable )
+        {
+            XmlDocument otrk2 = new XmlDocument();
+            XmlNodeList elements = null;
+
+            double source_lat = 0;
+            double source_lon = 0;
+            double target_lat = 0;
+            double target_lon = 0;
+
+            if ( System.IO.File.Exists( FileSrc ) )
+            {
+                otrk2.Load( FileSrc );
+
+                List<string> tagList = new List<string>();
+                //tagList.Add( "MapCalibration" );
+                tagList.Add( "CalibrationPoint" );
+
+                #region convert points
+                XmlNamespaceManager nsMan = new XmlNamespaceManager( otrk2.NameTable );
+                nsMan.AddNamespace( "otrk2", "http://oruxtracker.com/app/res/calibration" );
+
+                //elements = otrk2.GetElementsByTagName( "MapCalibration" );
+
+                elements = otrk2.SelectNodes( "//otrk2:MapCalibration[@layers=\"false\"]", nsMan );
+                foreach ( XmlNode element in elements )
+                {
+                    double min_lat=-180, min_lon=-90, max_lat=90, max_lon=90;
+                    List<double> lons = new List<double>();
+                    List<double> lats = new List<double>();
+
+                    XmlNodeList CalibrationPoints = element.SelectNodes( "otrk2:CalibrationPoints/otrk2:CalibrationPoint", nsMan );
+                    foreach ( XmlNode Point in CalibrationPoints )
+                    {
+                        XmlAttributeCollection attrs = Point.Attributes;
+                        foreach ( XmlAttribute attr in attrs )
+                        {
+                            if ( attr.Name.Equals( "lat", StringComparison.InvariantCultureIgnoreCase ) )
+                            {
+                                source_lat = Convert.ToDouble( attr.Value );
+                            }
+                            if ( attr.Name.Equals( "lon", StringComparison.InvariantCultureIgnoreCase ) )
+                            {
+                                source_lon = Convert.ToDouble( attr.Value );
+                            }
+                        }
+                        if ( ToWGS )
+                        {
+                            Convert2WGS( source_lon, source_lat, out target_lon, out target_lat, ConvertMethod );
+                        }
+                        else
+                        {
+                            Convert2Mars( source_lon, source_lat, out target_lon, out target_lat );
+                        }
+                        foreach ( XmlAttribute attr in attrs )
+                        {
+                            if ( attr.Name.Equals( "lat", StringComparison.InvariantCultureIgnoreCase ) )
+                            {
+                                attr.Value = target_lat.ToString( "0.00000000" );
+                                lats.Add( target_lat );
+                            }
+                            if ( attr.Name.Equals( "lon", StringComparison.InvariantCultureIgnoreCase ) )
+                            {
+                                attr.Value = target_lon.ToString( "0.00000000" );
+                                lons.Add( target_lon );
+                            }
+                        }
+                    }
+                    min_lat = lats.Min();
+                    max_lat = lats.Max();
+                    min_lon = lons.Min();
+                    max_lon = lons.Max();
+
+                    XmlNode MapBounds = element.SelectSingleNode( "otrk2:MapBounds", nsMan );
+                    foreach ( XmlAttribute attr in MapBounds.Attributes )
+                    {
+                        if ( attr.Name.Equals( "minLat", StringComparison.InvariantCultureIgnoreCase ) )
+                        {
+                            attr.Value = min_lat.ToString( "0.000000000000000" );
+                        }
+                        if ( attr.Name.Equals( "maxLat", StringComparison.InvariantCultureIgnoreCase ) )
+                        {
+                            attr.Value = max_lat.ToString( "0.000000000000000" );
+                        }
+                        if ( attr.Name.Equals( "minLon", StringComparison.InvariantCultureIgnoreCase ) )
+                        {
+                            attr.Value = min_lon.ToString( "0.000000000000000" );
+                        }
+                        if ( attr.Name.Equals( "maxLon", StringComparison.InvariantCultureIgnoreCase ) )
+                        {
+                            attr.Value = max_lon.ToString( "0.000000000000000" );
+                        }
+                    }
+                }
+                #endregion
+                otrk2.AppendChild( otrk2.CreateWhitespace( "\n" ) );
+                otrk2.Save( FileDst );
             }
             return true;
         }
