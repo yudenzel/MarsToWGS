@@ -7,7 +7,7 @@ Features
 ========
 1. Support convert china map position to WGS84(GPS) position.
 2. Support convert WGS84(GPS) position to china map position.
-3. Support convert GPX/KML file point position from Mars to WGS84
+3. Support convert GPX/KML/OruxMaps file point position from Mars to WGS84
 4. Support Drag-Drop a file to source file box and auto change target file name.
 
 Todo
