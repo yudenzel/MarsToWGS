@@ -233,7 +233,14 @@ namespace Mars2WGS
             file_dst = string.Format( "{0}\\{1}{2}{3}", fps, fns, suffix, fes );
 
             edFileSrc.Text = file_src.Trim();
-            edFileDst.Text = file_dst.Trim();
+            if ( file_src.EndsWith( ".otrk2.xml", StringComparison.InvariantCultureIgnoreCase ) )
+            {
+                edFileDst.Text = file_src.Trim();
+            }
+            else
+            {
+                edFileDst.Text = file_dst.Trim();
+            }
         }
 
         private void edFileSrc_TextChanged( object sender, EventArgs e )
@@ -281,7 +288,7 @@ namespace Mars2WGS
         private void edFileSrc_MouseDoubleClick( object sender, MouseEventArgs e )
         {
             dlgOpen.DefaultExt = ".gpx";
-            dlgOpen.Filter = "GPX File (*.gpx)|.gpx|KML File (*.kml)|.kml|All Files|*.*";
+            dlgOpen.Filter = "GPX File (*.gpx)|*.gpx|KML File (*.kml)|*.kml|OruxMaps File (*.otrk2.xml)|*.otrk2.xml|All Files|*.*";
             dlgOpen.FilterIndex = 1;
             dlgOpen.FileName = "*.gpx";
             //dlgOpen.InitialDirectory = LastOpenFolder;
@@ -295,7 +302,7 @@ namespace Mars2WGS
         private void edFileDst_MouseDoubleClick( object sender, MouseEventArgs e )
         {
             dlgSave.DefaultExt = ".gpx";
-            dlgSave.Filter = "GPX File (*.gpx)|.gpx|KML File (*.kml)|.kml|All Files|*.*";
+            dlgSave.Filter = "GPX File (*.gpx)|*.gpx|KML File (*.kml)|*.kml|OruxMaps File (*.otrk2.xml)|*.otrk2.xml|All Files|*.*";
             dlgSave.FilterIndex = 1;
             dlgSave.FileName = "*.gpx";
             //dlgSave.InitialDirectory = LastSaveFolder;
