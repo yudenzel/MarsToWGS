@@ -1,9 +1,9 @@
 syntax: glob
-*.pdb
-*.vshost*
-debug
-release
 bin
 obj
+debug
+release
 *.user
 *.suo
+*.pdb
+*.vshost*
