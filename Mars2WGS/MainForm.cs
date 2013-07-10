@@ -107,6 +107,22 @@ namespace Mars2WGS
             config.Save( ConfigurationSaveMode.Full );
         }
 
+        private string GetTargetName( string Source )
+        {
+            string target = Source;
+
+            string fps = System.IO.Path.GetDirectoryName( Source );
+            string fns = System.IO.Path.GetFileNameWithoutExtension( Source );
+            string fes = System.IO.Path.GetExtension( Source );
+
+            if ( !Source.EndsWith( ".otrk2.xml", StringComparison.InvariantCultureIgnoreCase ) )
+            {
+                target = string.Format( "{0}\\{1}{2}{3}", fps, fns, suffix, fes );
+            }
+
+            return target;
+        }
+
         public MainForm()
         {
             InitializeComponent();
@@ -226,21 +242,10 @@ namespace Mars2WGS
             string file_src = filenames[0].Trim();
             string file_dst = filenames[0].Trim();
 
-            string fps = System.IO.Path.GetDirectoryName( file_src );
-            string fns = System.IO.Path.GetFileNameWithoutExtension(file_src);
-            string fes = System.IO.Path.GetExtension(file_src);
-
-            file_dst = string.Format( "{0}\\{1}{2}{3}", fps, fns, suffix, fes );
+            file_dst = GetTargetName( file_src );
 
             edFileSrc.Text = file_src.Trim();
-            if ( file_src.EndsWith( ".otrk2.xml", StringComparison.InvariantCultureIgnoreCase ) )
-            {
-                edFileDst.Text = file_src.Trim();
-            }
-            else
-            {
-                edFileDst.Text = file_dst.Trim();
-            }
+            edFileDst.Text = file_dst.Trim();
         }
 
         private void edFileSrc_TextChanged( object sender, EventArgs e )
@@ -248,12 +253,9 @@ namespace Mars2WGS
             string file_src = edFileSrc.Text.Trim();
             string file_dst = file_src;
 
-            string fps = System.IO.Path.GetDirectoryName( file_src );
-            string fns = System.IO.Path.GetFileNameWithoutExtension( file_src );
-            string fes = System.IO.Path.GetExtension( file_src );
+            file_dst = GetTargetName( file_src );
 
-            file_dst = string.Format( "{0}\\{1}{2}{3}", fps, fns, suffix, fes );
-
+            edFileSrc.Text = file_src.Trim();
             edFileDst.Text = file_dst.Trim();
         }
 
@@ -269,6 +271,14 @@ namespace Mars2WGS
                 suffix = "_wgs";
                 ConvertMode = ConvertingType.ToWGS;
             }
+
+            string file_src = edFileSrc.Text.Trim();
+            string file_dst = file_src;
+
+            file_dst = GetTargetName( file_src );
+
+            edFileSrc.Text = file_src.Trim();
+            edFileDst.Text = file_dst.Trim();
         }
 
         private void rbToWGS_CheckedChanged( object sender, EventArgs e )
@@ -283,6 +293,13 @@ namespace Mars2WGS
                 suffix = "_mars";
                 ConvertMode = ConvertingType.ToMars;
             }
+            string file_src = edFileSrc.Text.Trim();
+            string file_dst = file_src;
+
+            file_dst = GetTargetName( file_src );
+
+            edFileSrc.Text = file_src.Trim();
+            edFileDst.Text = file_dst.Trim();
         }
 
         private void edFileSrc_MouseDoubleClick( object sender, MouseEventArgs e )
