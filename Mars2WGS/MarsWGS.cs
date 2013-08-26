@@ -8,7 +8,7 @@ using System.Xml.XPath;
 using System.IO;
 using System.Text.RegularExpressions;
 
-//[assembly: CompilationRelaxationsAttribute( CompilationRelaxations.NoStringInterning )] 
+//[assembly: CompilationRelaxationsAttribute( CompilationRelaxations.NoStringInterning )]
 
 namespace Mars2WGS
 {
@@ -75,6 +75,10 @@ namespace Mars2WGS
             return ( I - 1 ) + 660 * ( J - 1 );
         }
 
+        /// 最东端 东经135度2分30秒 黑龙江和乌苏里江交汇处
+        /// 最西端 东经73度40分 帕米尔高原乌兹别里山口（乌恰县）
+        /// 最南端 北纬3度52分 南沙群岛曾母暗沙
+        /// 最北端 北纬53度33分 漠河以北黑龙江主航道（漠河)
         /// <summary>
         /// x是117左右，y是31左右
         /// </summary>
@@ -159,6 +163,10 @@ namespace Mars2WGS
             }
         }
 
+        /// 最东端 东经135度2分30秒 黑龙江和乌苏里江交汇处
+        /// 最西端 东经73度40分 帕米尔高原乌兹别里山口（乌恰县）
+        /// 最南端 北纬3度52分 南沙群岛曾母暗沙
+        /// 最北端 北纬53度33分 漠河以北黑龙江主航道（漠河)
         /// <summary>
         /// x是117左右，y是31左右
         /// </summary>
@@ -184,7 +192,7 @@ namespace Mars2WGS
 
             if ( xWgs < 72.004 || xWgs > 137.8347 )
                 return;
-            if ( yWgs < 0.8293 || yWgs > 55.8271 )
+            if ( yWgs < 9.9984 || yWgs > 55.8271 )
                 return;
 
             double x=0, y=0;
@@ -194,8 +202,8 @@ namespace Mars2WGS
             double dLon =  300.0 + 1.0 * x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.Sqrt( Math.Abs( x ) );
             dLon += (  20.0 * Math.Sin( 6.0 * x * pi ) + 20.0 * Math.Sin( 2.0 * x * pi ) ) * 2.0 / 3.0;
             dLon += (  20.0 * Math.Sin( x * pi ) + 40.0 * Math.Sin(x / 3.0 * pi ) ) * 2.0 / 3.0;
-            dLon += ( 150.0 * Math.Sin( x / 12.0 * pi ) + 300.0 * Math.Sin( x / 30.0 * pi ) ) * 2.0 / 3.0;            
-            
+            dLon += ( 150.0 * Math.Sin( x / 12.0 * pi ) + 300.0 * Math.Sin( x / 30.0 * pi ) ) * 2.0 / 3.0;
+
             double dLat = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.Sqrt( Math.Abs( x ) );
             dLat += (  20.0 * Math.Sin( 6.0 * x * pi ) + 20.0 * Math.Sin( 2.0 * x * pi ) ) * 2.0 / 3.0;
             dLat += (  20.0 * Math.Sin( y * pi ) + 40.0 * Math.Sin( y / 3.0 * pi ) ) * 2.0 / 3.0;
