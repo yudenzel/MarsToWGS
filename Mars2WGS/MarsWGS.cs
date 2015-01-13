@@ -334,12 +334,15 @@ namespace Mars2WGS
                         foreach ( string point in points )
                         {
                             string[] values = point.Trim().Split( new Char[] { ',' } );
-                            if ( values.Length == 3 )
+                            if (values.Length != 3)
                             {
-                                source_lon = Convert.ToDouble( values[0] );
-                                source_lat = Convert.ToDouble( values[1] );
-                                source_ele = Convert.ToDouble( values[2] );
+                                continue;
                             }
+
+                            source_lon = Convert.ToDouble(values[0]);
+                            source_lat = Convert.ToDouble(values[1]);
+                            source_ele = Convert.ToDouble(values[2]);
+
                             if ( ToWGS )
                             {
                                 Convert2WGS( source_lon, source_lat, out target_lon, out target_lat, ConvertMethod );
