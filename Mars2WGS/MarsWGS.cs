@@ -305,7 +305,7 @@ namespace Mars2WGS
 
         private bool ConvertKML( string FileSrc, string FileDst, bool ToWGS = true, ConvertingMode ConvertMethod = ConvertingMode.LookTable )
         {
-            XmlDocument kml = new XmlDocument();
+            XmlDocument kml = new XmlDocument() { PreserveWhitespace = true };
             XmlNodeList elements = null;
 
             double source_lat = 0;
@@ -328,17 +328,21 @@ namespace Mars2WGS
                     elements = kml.GetElementsByTagName( tag );
                     foreach ( XmlNode element in elements )
                     {
-                        string[] points = element.InnerText.Split( new Char[] { '\n', ' ', '\r' });
+                        string[] points = element.InnerText.Split( new Char[] { '\n', ' ', '\r' }, StringSplitOptions.RemoveEmptyEntries);
                         StringBuilder target = new StringBuilder();
 
                         foreach ( string point in points )
                         {
-                            string[] values = point.Trim().Split( new Char[] { ',' } );
+                            string[] values = point.Trim().Split( new Char[] { ',' }, StringSplitOptions.RemoveEmptyEntries );
                             if ( values.Length == 3 )
                             {
                                 source_lon = Convert.ToDouble( values[0] );
                                 source_lat = Convert.ToDouble( values[1] );
                                 source_ele = Convert.ToDouble( values[2] );
+                            }
+                            else
+                            {
+                                continue;
                             }
                             if ( ToWGS )
                             {
