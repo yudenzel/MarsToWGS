@@ -16,6 +16,22 @@ namespace Mars2WGS
     enum ConvertingMode { LookTable=0, Formula=1 };
     enum ConvertingType { ToWGS=0, ToMars=1 };
 
+    class GeoRegion
+    {
+        public double west;
+        public double east;
+        public double north;
+        public double south;
+
+        public GeoRegion(double w, double e, double n, double s)
+        {
+            west = w;
+            east = e;
+            north = n;
+            south = s;
+        }
+    }
+
     class MarsWGS
     {
         private double[] TableX = new double[660 * 450];
@@ -24,6 +40,35 @@ namespace Mars2WGS
         private bool InitTable = false;
 
         string AppPath = System.AppDomain.CurrentDomain.BaseDirectory;
+
+        //China region - raw data
+        private List<GeoRegion> chinaRegion = new List<GeoRegion>();
+        //China excluded region - raw data
+        private  List<GeoRegion> excludeRegion = new List<GeoRegion>();
+
+        private Boolean isInRect( GeoRegion rect, double lon, double lat )
+        {
+            return rect.west <= lon && rect.east >= lon && rect.north >= lat && rect.south <= lat;
+        }
+
+        private Boolean isInChina( double lon, double lat )
+        {
+            for ( int i = 0; i < chinaRegion.Count; i++ )
+            {
+                if ( isInRect( chinaRegion[i], lon, lat ) )
+                {
+                    for ( int j = 0; j < excludeRegion.Count; j++ )
+                    {
+                        if ( isInRect( excludeRegion[j], lon, lat ) )
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// Load
@@ -190,10 +235,11 @@ namespace Mars2WGS
             const double a = 6378245.0;
             const double ee = 0.00669342162296594323;
 
-            if ( xWgs < 72.004 || xWgs > 137.8347 )
-                return;
-            if ( yWgs < 9.9984 || yWgs > 55.8271 )
-                return;
+            //if ( xWgs < 72.004 || xWgs > 137.8347 )
+            //    return;
+            //if ( yWgs < 9.9984 || yWgs > 55.8271 )
+            //    return;
+            if ( !isInChina( xWgs, yWgs ) ) return;
 
             double x=0, y=0;
             x = xWgs - 105.0;
@@ -467,6 +513,19 @@ namespace Mars2WGS
 
         public MarsWGS()
         {
+            chinaRegion.Add( new GeoRegion( 79.446200, 49.220400, 96.330000, 42.889900 ) );
+            chinaRegion.Add( new GeoRegion( 109.687200, 54.141500, 135.000200, 39.374200 ) );
+            chinaRegion.Add( new GeoRegion( 73.124600, 42.889900, 124.143255, 29.529700 ) );
+            chinaRegion.Add( new GeoRegion( 82.968400, 29.529700, 97.035200, 26.718600 ) );
+            chinaRegion.Add( new GeoRegion( 97.025300, 29.529700, 124.367395, 20.414096 ) );
+            chinaRegion.Add( new GeoRegion( 107.975793, 20.414096, 111.744104, 17.871542 ) );
+            excludeRegion.Add( new GeoRegion( 119.921265, 25.398623, 122.497559, 21.785006 ) );
+            excludeRegion.Add( new GeoRegion( 101.865200, 22.284000, 106.665000, 20.098800 ) );
+            excludeRegion.Add( new GeoRegion( 106.452500, 21.542200, 108.051000, 20.487800 ) );
+            excludeRegion.Add( new GeoRegion( 109.032300, 55.817500, 119.127000, 50.325700 ) );
+            excludeRegion.Add( new GeoRegion( 127.456800, 55.817500, 137.022700, 49.557400 ) );
+            excludeRegion.Add( new GeoRegion( 131.266200, 44.892200, 137.022700, 42.569200 ) );
+
             LoadText();
         }
     }
