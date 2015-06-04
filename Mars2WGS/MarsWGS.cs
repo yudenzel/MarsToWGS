@@ -398,7 +398,7 @@ namespace Mars2WGS
                                 Convert2Mars( source_lon, source_lat, out target_lon, out target_lat );
                             }
                             target_ele = source_ele;
-                            target.AppendLine( string.Format( "{0:F6},{1:F6},{2:F6}", target_lon, target_lat, target_ele ) );
+                            target.AppendLine( string.Format( "{0},{1},{2}", Math.Round( target_lon ), Math.Round( target_lat ), Math.Round( target_ele ) ) );
                         }
                         element.InnerText = target.ToString().Trim();
                     }
